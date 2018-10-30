@@ -1,2 +1,19 @@
 ---
 # Role default lower priority variables
+
+# List of dicts with users to configure. The dicts have the same attributes
+# that the ones expected by the ansible user module. For example:
+#
+# users:
+#   - name: johnd
+#     comment: John Doe
+#     uid: 1040
+#     group: admin
+
+users: []
+
+# Dicitionary with the defaults options to use if no other ones are specified in
+# the `users` variable. The members of the dict are the same attributes
+# that the ones expected by the ansible user module
+
+users_defaults: {}

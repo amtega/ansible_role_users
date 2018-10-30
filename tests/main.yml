@@ -1,2 +1,55 @@
 ---
 # Tasks for testing role
+
+- name: run idempotence test
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      docker_presets_images_json_query: >-
+        [? starts_with(name, `centos-6`)
+           || starts_with(name, `centos-7`)
+           || starts_with(name, `fedora-27`)
+           || starts_with(name, `fedora-28`) ]
+
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: test users role
+  hosts: docker_sandbox_containers
+  roles:
+    - amtega.users
+  vars:
+    users:
+      - name: johnd
+        comment: John Doe
+        uid: 1040
+        group: users
+      - name: johnroot
+        comment: John Root
+        uid: 1045
+        group: root
+    users_defaults:
+      state: present
+  tasks:
+    - name: read /etc/passwd file
+      shell: cat /etc/passwd
+      changed_when: false
+      register: read_passwd_result
+
+    - name: check that /etc/passwd contains required users
+      assert:
+        that:
+          - read_passwd_result.stdout is search("johnd")
+          - read_passwd_result.stdout is search("johnroot")
+  tags:
+    - idempotence
+
+- name: cleanup docker docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - sandbox
