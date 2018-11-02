@@ -43,7 +43,7 @@
         generate_ssh_key: >-
           {{ item.generate_ssh_key | default(users_defaults.generate_ssh_key) | default(omit) }}
         group: >-
-          {{ item.group | default(users_defaults.group) | default(omit) }}          
+          {{ item.group | default(users_defaults.group) | default(omit) }}
         groups: >-
           {{ item.groups | default(users_defaults.groups) | default(omit) }}
         home : >-
