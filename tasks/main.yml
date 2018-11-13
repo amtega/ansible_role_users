@@ -1,19 +1,6 @@
 ---
 # Role tasks
 
-- name: assert platform is supported
-  assert:
-    that:
-      - distribution in users_supported_distributions
-      - >-
-        ansible_facts.distribution_version
-        is version(users_supported_versions[distribution], ">=")
-  vars:
-    distribution: "{{ ansible_facts.distribution | lower }}"
-  tags:
-    - role::users
-    - role::users::check
-
 - block:
     # Seems that user module doesn't work correctly if you pass uid parameter
     # with an existen user (with no uid change) and there are processes running
