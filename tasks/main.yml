@@ -22,7 +22,7 @@
     # with that user. So, first we check existence of the users as workaround
 
     - name: check users
-      shell: "getent passwd {{ item }}"
+      command: "getent passwd {{ item }}"
       register: users_check_result
       changed_when: no
       failed_when: no
