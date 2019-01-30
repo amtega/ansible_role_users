@@ -2,6 +2,21 @@
 # Role tasks
 
 - block:
+    - name: setup fact with users loaded from host variables
+      include_role:
+        name: amtega.select_hostvars
+        apply:
+          tags:
+            - role::users
+      vars:
+        select_hostvars_pattern: "^users_.*"
+        select_hostvars_exclude_pattern: "^users_defaults$"
+        select_hostvars_attributes:
+          - name
+        select_hostvars_fact_name: users_hostvars
+        select_hostvars_output_type: list
+      when: users_load_from_hostvars
+
     # Seems that user module doesn't work correctly if you pass uid parameter
     # with an existen user (with no uid change) and there are processes running
     # with that user. So, first we check existence of the users as workaround
@@ -11,7 +26,10 @@
       register: users_check_result
       changed_when: no
       failed_when: no
-      loop: "{{ users }}"
+      loop: >-
+        {{ users
+           + ((users_load_from_hostvars)
+              | ternary(users_hostvars | flatten, [])) }}
       loop_control:
         label: "{{ item.name }}"
 
@@ -102,7 +120,10 @@
           {{ item.update_password
              | default(users_defaults.update_password) | default(omit) }}
       when: users_check_result.results[index].rc != 0
-      loop: "{{ users }}"
+      loop: >-
+        {{ users
+           + ((users_load_from_hostvars)
+              | ternary(users_hostvars | flatten, [])) }}
       loop_control:
         index_var: index
         label: "{{ item.name }}"

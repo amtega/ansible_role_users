@@ -17,23 +17,35 @@
   tags:
     - sandbox
 
+- name: prepare docker containers for test
+  hosts: docker_sandbox_containers
+  tasks:
+    - name: setup extra users
+      set_fact:
+        users_extra:
+          name: johnroot
+          comment: John Root
+          uid: 1045
+          group: root
+  tags:
+    - idempotence
+
 - name: test users role
   hosts: docker_sandbox_containers
   roles:
     - amtega.users
   vars:
+    users_load_from_hostvars: yes
     users:
       - name: johnd
         comment: John Doe
         uid: 1040
         group: users
-      - name: johnroot
-        comment: John Root
-        uid: 1045
-        group: root
     users_defaults:
       state: present
   tasks:
+    - debug: var=users_hostvars
+
     - name: read /etc/passwd file
       shell: cat /etc/passwd
       changed_when: false
