@@ -44,10 +44,8 @@
     users_defaults:
       state: present
   tasks:
-    - debug: var=users_hostvars
-
     - name: read /etc/passwd file
-      shell: cat /etc/passwd
+      command: cat /etc/passwd
       changed_when: false
       register: read_passwd_result
 
