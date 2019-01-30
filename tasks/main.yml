@@ -59,10 +59,10 @@
         groups: >-
           {{ item.groups
              | default(users_defaults.groups) | default(omit) }}
-        home : >-
+        home: >-
           {{ item.home
              | default(users_defaults.home) | default(omit) }}
-        local : >-
+        local: >-
           {{ item.local
              | default(users_defaults.local) | default(omit) }}
         login_class: >-
@@ -116,7 +116,7 @@
         uid: >-
           {{ item.uid
              | default(users_defaults.uid) | default(omit) }}
-        update_password : >-
+        update_password: >-
           {{ item.update_password
              | default(users_defaults.update_password) | default(omit) }}
       when: users_check_result.results[index].rc != 0
