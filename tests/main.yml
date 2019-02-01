@@ -41,8 +41,11 @@
         comment: John Doe
         uid: 1040
         group: users
+        password_min_days: 30
+        password_max_days: 60
     users_defaults:
       state: present
+      password_inactive: 30    
   tasks:
     - name: read /etc/passwd file
       command: cat /etc/passwd

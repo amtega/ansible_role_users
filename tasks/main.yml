@@ -17,115 +17,154 @@
         select_hostvars_output_type: list
       when: users_load_from_hostvars
 
-    # Seems that user module doesn't work correctly if you pass uid parameter
-    # with an existen user (with no uid change) and there are processes running
-    # with that user. So, first we check existence of the users as workaround
+    # # Seems that user module doesn't work correctly if you pass uid parameter
+    # # with an existen user (with no uid change) and there are processes running
+    # # with that user. So, first we check existence of the users as workaround
+    #
+    # - name: check users
+    #   command: "getent passwd {{ users_user }}"
+    #   register: users_check_result
+    #   changed_when: no
+    #   failed_when: no
+    #   loop: >-
+    #     {{ users
+    #        + ((users_load_from_hostvars)
+    #           | ternary(users_hostvars | default([]) | flatten, [])) }}
+    #   loop_control:
+    #     loop_var: users_user
+    #     label: "{{ users_user.name }}"
+    #
+    # - name: setup users
+    #   user:
+    #     append: >-
+    #       {{ users_user.append
+    #          | default(users_defaults.append) | default(omit) }}
+    #     comment: >-
+    #       {{ users_user.comment
+    #          | default(users_defaults.comment) | default(omit) }}
+    #     create_home: >-
+    #       {{ users_user.create_home
+    #          | default(users_defaults.create_home) | default(omit) }}
+    #     expires: >-
+    #       {{ users_user.expires
+    #          | default(users_defaults.expires) | default(omit) }}
+    #     force: >-
+    #       {{ users_user.force
+    #          | default(users_defaults.force) | default(omit) }}
+    #     generate_ssh_key: >-
+    #       {{ users_user.generate_ssh_key
+    #          | default(users_defaults.generate_ssh_key) | default(omit) }}
+    #     group: >-
+    #       {{ users_user.group
+    #          | default(users_defaults.group) | default(omit) }}
+    #     groups: >-
+    #       {{ users_user.groups
+    #          | default(users_defaults.groups) | default(omit) }}
+    #     home: >-
+    #       {{ users_user.home
+    #          | default(users_defaults.home) | default(omit) }}
+    #     local: >-
+    #       {{ users_user.local
+    #          | default(users_defaults.local) | default(omit) }}
+    #     login_class: >-
+    #       {{ users_user.login_class
+    #          | default(users_defaults.login_class) | default(omit) }}
+    #     move_home: >-
+    #       {{ users_user.move_home
+    #          | default(users_defaults.move_home) | default(omit) }}
+    #     name: >-
+    #       {{ users_user.name
+    #          | default(users_defaults.name) | default(omit) }}
+    #     non_unique: >-
+    #       {{ users_user.non_unique
+    #          | default(users_defaults.non_unique) | default(omit) }}
+    #     password: >-
+    #       {{ users_user.password
+    #          | default(users_defaults.password) | default(omit) }}
+    #     password_lock: >-
+    #       {{ users_user.password_lock
+    #          | default(users_defaults.password_lock) | default(omit) }}
+    #     remove: >-
+    #       {{ users_user.remove
+    #          | default(users_defaults.remove) | default(omit) }}
+    #     seuser: >-
+    #       {{ users_user.seuser
+    #          | default(users_defaults.seuser) | default(omit) }}
+    #     shell: >-
+    #       {{ users_user.shell
+    #          | default(users_defaults.shell) | default(omit) }}
+    #     skeleton: >-
+    #       {{ users_user.skeleton
+    #          | default(users_defaults.skeleton) | default(omit) }}
+    #     ssh_key_bits: >-
+    #       {{ users_user.ssh_key_bits
+    #          | default(users_defaults.ssh_key_bits) | default(omit) }}
+    #     ssh_key_comment: >-
+    #       {{ users_user.ssh_key_comment
+    #          | default(users_defaults.ssh_key_comment) | default(omit) }}
+    #     ssh_key_file: >-
+    #       {{ users_user.ssh_key_file
+    #          | default(users_defaults.ssh_key_file) | default(omit) }}
+    #     ssh_key_passphrase: >-
+    #       {{ users_user.ssh_key_passphrase
+    #          | default(users_defaults.ssh_key_passphrase) | default(omit) }}
+    #     ssh_key_type: >-
+    #       {{ users_user.ssh_key_type
+    #          | default(users_defaults.ssh_key_type) | default(omit) }}
+    #     system: >-
+    #       {{ users_user.system
+    #          | default(users_defaults.system) | default(omit) }}
+    #     uid: >-
+    #       {{ users_user.uid
+    #          | default(users_defaults.uid) | default(omit) }}
+    #     update_password: >-
+    #       {{ users_user.update_password
+    #          | default(users_defaults.update_password) | default(omit) }}
+    #   when: users_check_result.results[users_index].rc != 0
+    #   loop: >-
+    #     {{ users
+    #        + ((users_load_from_hostvars)
+    #           | ternary(users_hostvars | default([]) | flatten, [])) }}
+    #   loop_control:
+    #     loop_var: users_user
+    #     index_var: users_index
+    #     label: "{{ users_user.name }}"
 
-    - name: check users
-      command: "getent passwd {{ item }}"
-      register: users_check_result
+    - name: get user password expiry information
+      command: "chage --list {{ users_user.name }}"
+      register: users_get_chage_info_result
       changed_when: no
-      failed_when: no
       loop: >-
         {{ users
            + ((users_load_from_hostvars)
               | ternary(users_hostvars | default([]) | flatten, [])) }}
       loop_control:
-        label: "{{ item.name }}"
+        loop_var: users_user
+        label: "{{ users_user.name }}"
+      environment:
+        LANGUAGE: en_US
 
-    - name: setup users
-      user:
-        append: >-
-          {{ item.append
-             | default(users_defaults.append) | default(omit) }}
-        comment: >-
-          {{ item.comment
-             | default(users_defaults.comment) | default(omit) }}
-        create_home: >-
-          {{ item.create_home
-             | default(users_defaults.create_home) | default(omit) }}
-        expires: >-
-          {{ item.expires
-             | default(users_defaults.expires) | default(omit) }}
-        force: >-
-          {{ item.force
-             | default(users_defaults.force) | default(omit) }}
-        generate_ssh_key: >-
-          {{ item.generate_ssh_key
-             | default(users_defaults.generate_ssh_key) | default(omit) }}
-        group: >-
-          {{ item.group
-             | default(users_defaults.group) | default(omit) }}
-        groups: >-
-          {{ item.groups
-             | default(users_defaults.groups) | default(omit) }}
-        home: >-
-          {{ item.home
-             | default(users_defaults.home) | default(omit) }}
-        local: >-
-          {{ item.local
-             | default(users_defaults.local) | default(omit) }}
-        login_class: >-
-          {{ item.login_class
-             | default(users_defaults.login_class) | default(omit) }}
-        move_home: >-
-          {{ item.move_home
-             | default(users_defaults.move_home) | default(omit) }}
-        name: >-
-          {{ item.name
-             | default(users_defaults.name) | default(omit) }}
-        non_unique: >-
-          {{ item.non_unique
-             | default(users_defaults.non_unique) | default(omit) }}
-        password: >-
-          {{ item.password
-             | default(users_defaults.password) | default(omit) }}
-        password_lock: >-
-          {{ item.password_lock
-             | default(users_defaults.password_lock) | default(omit) }}
-        remove: >-
-          {{ item.remove
-             | default(users_defaults.remove) | default(omit) }}
-        seuser: >-
-          {{ item.seuser
-             | default(users_defaults.seuser) | default(omit) }}
-        shell: >-
-          {{ item.shell
-             | default(users_defaults.shell) | default(omit) }}
-        skeleton: >-
-          {{ item.skeleton
-             | default(users_defaults.skeleton) | default(omit) }}
-        ssh_key_bits: >-
-          {{ item.ssh_key_bits
-             | default(users_defaults.ssh_key_bits) | default(omit) }}
-        ssh_key_comment: >-
-          {{ item.ssh_key_comment
-             | default(users_defaults.ssh_key_comment) | default(omit) }}
-        ssh_key_file: >-
-          {{ item.ssh_key_file
-             | default(users_defaults.ssh_key_file) | default(omit) }}
-        ssh_key_passphrase: >-
-          {{ item.ssh_key_passphrase
-             | default(users_defaults.ssh_key_passphrase) | default(omit) }}
-        ssh_key_type: >-
-          {{ item.ssh_key_type
-             | default(users_defaults.ssh_key_type) | default(omit) }}
-        system: >-
-          {{ item.system
-             | default(users_defaults.system) | default(omit) }}
-        uid: >-
-          {{ item.uid
-             | default(users_defaults.uid) | default(omit) }}
-        update_password: >-
-          {{ item.update_password
-             | default(users_defaults.update_password) | default(omit) }}
-      when: users_check_result.results[index].rc != 0
+    - name: setup user password expiry information
+      command: >-
+        {{ (users_chage_parameters | length > 0)
+           | ternary("chage "
+                     + users_chage_parameters | join(" ")
+                     + " "
+                     + users_user.name,
+                     "/bin/true") }}
+      register: users_get_chage_result
+      changed_when: users_chage_parameters | length > 0
+      failed_when: users_get_chage_result.rc != 0
       loop: >-
         {{ users
            + ((users_load_from_hostvars)
               | ternary(users_hostvars | default([]) | flatten, [])) }}
       loop_control:
-        index_var: index
-        label: "{{ item.name }}"
+        loop_var: users_user
+        index_var: user_index
+        label: "{{ users_user.name }}"
+      vars:
+        users_chage_parameters: >-
+          {{ lookup("template", "chage_parameters.j2") | from_yaml }}
   tags:
     - role::users
