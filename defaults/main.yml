@@ -37,8 +37,8 @@
 # attributes to change password expiricy information (see CHAGE(1) man page for
 # details):
 #
-#   - password_last_day: <days since January 1st, 1970>
-#   - password_expire_date: <days since January 1st, 1970>
+#   - password_last_day: <date in the format YYYY-MM-DD>
+#   - password_expire_date: <date in the format YYYY-MM-DD>
 #   - password_inactive: <days>
 #   - password_min_days: <days>
 #   - password_max_days: <days>
