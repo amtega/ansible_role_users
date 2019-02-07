@@ -111,6 +111,9 @@
         ssh_key_type: >-
           {{ users_user.ssh_key_type
              | default(users_defaults.ssh_key_type) | default(omit) }}
+        state: >-
+          {{ users_user.state
+             | default(users_defaults.state) | default(omit) }}             
         system: >-
           {{ users_user.system
              | default(users_defaults.system) | default(omit) }}
