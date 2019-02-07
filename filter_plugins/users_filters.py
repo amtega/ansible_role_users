@@ -2,6 +2,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+from crypt import crypt
 from datetime import datetime
 from re import compile
 
@@ -93,6 +94,19 @@ def users_convert_chage_date_to_yyyymmdd(value):
     return result
 
 
+def users_crypt(clear_password, salt):
+    """Hash a clear password match using the specified salt.
+
+    Args:
+        clear_password (string): clear password to encrypt
+        salt (string): salt to use
+
+    Returns:
+        string: encrypted password using the given salt
+    """
+    return crypt(clear_password, salt)
+
+
 class FilterModule(object):
     """Ansible users filters."""
 
@@ -101,5 +115,6 @@ class FilterModule(object):
             "users_convert_chage_date_to_days":
                 users_convert_chage_date_to_days,
             "users_convert_chage_date_to_yyyymmdd":
-                users_convert_chage_date_to_yyyymmdd
+                users_convert_chage_date_to_yyyymmdd,
+            "users_crypt": users_crypt
         }

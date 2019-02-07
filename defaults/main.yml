@@ -34,6 +34,13 @@
 #   - update_password
 #
 # Additionally, the dict with the user info also support the following
+# attributes to control password management:
+#
+#   - password_encrypted: tells if the password given on `password` is encrypted
+#     or not. The default is `no`. If it is not encrypted the role will encrypt
+#     it.
+#
+# Additionally, the dict with the user info also support the following
 # attributes to change password expiricy information (see CHAGE(1) man page for
 # details):
 #
@@ -69,3 +76,16 @@ users_defaults: {}
 # structure detailed before for `users`
 
 users_load_from_hostvars: no
+
+# Algorithm to use for new passwords hash. See ansible `password_hash` filter
+# for details
+
+users_password_hash_algorithm: sha512
+
+# Seed to use for new passwords hash
+
+users_password_hash_seed: "{{ 100000000000000000000000000 | random | string }}"
+
+# Hide sensitive information
+
+users_no_log: yes
