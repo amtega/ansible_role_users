@@ -1,0 +1,57 @@
+{%- set ns = namespace(found=false, password_expire_date=none, changed=[]) -%}
+
+{%- macro render_option(option) -%}
+    {%- set current_password_info = users_get_chage_info_result.results[user_index].stdout_lines -%}
+    {%- if current_password_info | length > 0 -%}
+        {%- set current_value = current_password_info
+                                | select("search", users_chage_options_map[option])
+                                | list
+                                | first
+                                | regex_replace(".*: (.*)", "\\1")
+                                | lower
+                                | regex_replace("never", "-1")
+                                | string -%}
+        {%- set value = users_user[option] | default(-2) | string | lower -%}
+        {%- set default_value = users_defaults[option] | default(-2) | string | lower -%}
+
+        {%- if option in ["password_last_day", "password_expire_date", "password_inactive"] -%}
+            {%- set current_value = current_value | users_convert_chage_date_to_yyyymmdd -%}
+            {%- if current_value != -1 -%}
+                {%- if option == "password_expire_date" -%}
+                  {%- set ns.password_expire_date = (current_value + " 00:00:00") | to_datetime -%}
+                {%- endif -%}
+                {%- if option == "password_inactive" -%}
+                  {%- if "password_max_days" not in ns.changed -%}
+                      {%- set current_value = ((current_value + " 00:00:00") | to_datetime - ns.password_expire_date).days | string -%}
+                  {% else %}
+                      {%- set current_value = none -%}
+                  {%- endif -%}
+                {%- endif -%}
+            {%- else -%}
+                {%- if option == "password_expire_date" -%}
+                  {%- set ns.password_expire_date = none -%}
+                {%- endif -%}
+                {%- if option == "password_inactive"
+                       and ns.password_expire_date is none
+                       and "password_max_days" not in ns.changed -%}
+                  {%- set default_value = -1 -%}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endif -%}
+
+        {%- if (value != "-2" and value != current_value)
+               or (default_value != "-2" and current_value != default_value) -%}
+            {%- set ns.found = true -%}
+            {%- set ns.changed = ns.changed + [ option ] -%}
+      {#- #}- "--{{ option | regex_replace('password_', '') | regex_replace('_', '') }}={% if value != '-2' %}{{ value }}{% else %}{{ default_value }}{% endif %}"{{ "\n" }}
+        {%- endif -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{% for option in users_chage_options %}
+  {{- render_option(option) -}}
+{% endfor %}
+
+{% if not ns.found %}
+[]
+{% endif %}

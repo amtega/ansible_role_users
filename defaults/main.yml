@@ -1,14 +1,66 @@
 ---
 # Role default lower priority variables
 
-# List of dicts with users to configure. The dicts have the same attributes
-# that the ones expected by the ansible user module. For example:
+# List of dicts with users to configure. The dicts can have this attributes,
+# with the same meaning that the ones expected by the ansible user module:
+#
+#   - append
+#   - comment
+#   - create_home
+#   - expires
+#   - force
+#   - generate_ssh_key
+#   - group
+#   - groups
+#   - home
+#   - local
+#   - login_class
+#   - move_home
+#   - name
+#   - non_unique
+#   - password
+#   - password_lock
+#   - remove
+#   - seuser
+#   - shell
+#   - skeleton
+#   - ssh_key_bits
+#   - ssh_key_comment
+#   - ssh_key_file
+#   - ssh_key_passphrase
+#   - ssh_key_type
+#   - system
+#   - uid
+#   - update_password
+#
+# Additionally, the dict with the user info also support the following
+# attributes to control password management:
+#
+#   - password_encrypted: tells if the password given on `password` is encrypted
+#     or not. The default is `no`. If it is not encrypted the role will encrypt
+#     it.
+#
+# Additionally, the dict with the user info also support the following
+# attributes to change password expiricy information (see CHAGE(1) man page for
+# details):
+#
+#   - password_last_day: <date in the format YYYY-MM-DD>
+#   - password_expire_date: <date in the format YYYY-MM-DD>
+#   - password_inactive: <days>
+#   - password_min_days: <days>
+#   - password_max_days: <days>
+#   - password_warn_days: <days>
+#
+# Sample:
 #
 # users:
 #   - name: johnd
 #     comment: John Doe
 #     uid: 1040
 #     group: admin
+#     password_min_days: 30
+#     password_max_days: 120
+#     password_warn_days: 15
 
 users: []
 
@@ -24,3 +76,16 @@ users_defaults: {}
 # structure detailed before for `users`
 
 users_load_from_hostvars: no
+
+# Algorithm to use for new passwords hash. See ansible `password_hash` filter
+# for details
+
+users_password_hash_algorithm: sha512
+
+# Seed to use for new passwords hash
+
+users_password_hash_seed: "{{ 100000000000000000000000000 | random | string }}"
+
+# Hide sensitive information
+
+users_no_log: yes

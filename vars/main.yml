@@ -1,0 +1,22 @@
+---
+# Role variables
+
+# Chage tool config options
+
+users_chage_options:
+  - password_min_days
+  - password_max_days
+  - password_warn_days
+  - password_last_day
+  - password_expire_date
+  - password_inactive
+
+# Chage tool config options map
+
+users_chage_options_map:
+  password_last_day: Last password change
+  password_expire_date: Password expires
+  password_inactive: Password inactive
+  password_min_days: Minimum .* password change
+  password_max_days: Maximum .* password change
+  password_warn_days: Number of days of warning .*
