@@ -1,6 +1,6 @@
 # Ansible users role
 
-This is an [Ansible](http://www.ansible.com) role which manages users through the user module.
+This is an [Ansible](http://www.ansible.com) role which manages users and their password policies.
 
 ## Requirements
 

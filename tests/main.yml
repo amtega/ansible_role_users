@@ -45,7 +45,7 @@
         password_max_days: 60
     users_defaults:
       state: present
-      password_inactive: 30    
+      password_inactive: 30
   tasks:
     - name: read /etc/passwd file
       command: cat /etc/passwd
@@ -66,4 +66,5 @@
     - role: amtega.docker_sandbox
       docker_sandbox_state: absent
   tags:
+    - cleanup
     - sandbox

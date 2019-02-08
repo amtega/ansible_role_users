@@ -137,43 +137,47 @@
             users_user_password: >-
               {{ lookup('template', 'password.j2') | from_yaml }}
 
+        - name: get user password expiry information
+          shell: >-
+            getent shadow | grep "^{{ users_user.name }}:" > /dev/null
+            && chage --list {{ users_user.name }}
+          args:
+            warn: no
+          changed_when: no
+          failed_when: no
+          register: users_get_chage_info_result
+          loop: >-
+            {{ users
+               + ((users_load_from_hostvars)
+                  | ternary(users_hostvars | default([]) | flatten, [])) }}
+          loop_control:
+            loop_var: users_user
+            label: "{{ users_user.name }}"
+          environment:
+            LANGUAGE: en_US
 
-        # - name: get user password expiry information
-        #   command: "chage --list {{ users_user.name }}"
-        #   register: users_get_chage_info_result
-        #   changed_when: no
-        #   loop: >-
-        #     {{ users
-        #        + ((users_load_from_hostvars)
-        #           | ternary(users_hostvars | default([]) | flatten, [])) }}
-        #   loop_control:
-        #     loop_var: users_user
-        #     label: "{{ users_user.name }}"
-        #   environment:
-        #     LANGUAGE: en_US
-        #
-        # - name: setup user password expiry information
-        #   command: >-
-        #     {{ (users_chage_parameters | length > 0)
-        #        | ternary("chage "
-        #                  + users_chage_parameters | join(" ")
-        #                  + " "
-        #                  + users_user.name,
-        #                  "/bin/true") }}
-        #   register: users_get_chage_result
-        #   changed_when: users_chage_parameters | length > 0
-        #   failed_when: users_get_chage_result.rc != 0
-        #   loop: >-
-        #     {{ users
-        #        + ((users_load_from_hostvars)
-        #           | ternary(users_hostvars | default([]) | flatten, [])) }}
-        #   loop_control:
-        #     loop_var: users_user
-        #     index_var: user_index
-        #     label: "{{ users_user.name }}"
-        #   vars:
-        #     users_chage_parameters: >-
-        #       {{ lookup("template", "chage_parameters.j2") | from_yaml }}
+        - name: setup user password expiry information
+          command: >-
+            {{ (users_chage_parameters | length > 0)
+               | ternary("chage "
+                         + users_chage_parameters | join(" ")
+                         + " "
+                         + users_user.name,
+                         "/bin/true") }}
+          register: users_get_chage_result
+          changed_when: users_chage_parameters | length > 0
+          failed_when: users_get_chage_result.rc != 0
+          loop: >-
+            {{ users
+               + ((users_load_from_hostvars)
+                  | ternary(users_hostvars | default([]) | flatten, [])) }}
+          loop_control:
+            loop_var: users_user
+            index_var: user_index
+            label: "{{ users_user.name }}"
+          vars:
+            users_chage_parameters: >-
+              {{ lookup("template", "chage.j2") | from_yaml }}
       vars:
         users_to_manage: >-
           {{ users

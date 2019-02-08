@@ -4,12 +4,12 @@
 # Chage tool config options
 
 users_chage_options:
-  - password_last_day
-  - password_expire_date
-  - password_inactive
   - password_min_days
   - password_max_days
   - password_warn_days
+  - password_last_day
+  - password_expire_date
+  - password_inactive
 
 # Chage tool config options map
 
