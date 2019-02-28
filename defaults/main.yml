@@ -84,7 +84,7 @@ users_password_hash_algorithm: sha512
 
 # Seed to use for new passwords hash
 
-users_password_hash_seed: "{{ 100000000000000000000000000 | random | string }}"
+users_password_hash_seed: "{{ 1000000000000000 | random | string }}"
 
 # Hide sensitive information
 
