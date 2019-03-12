@@ -1,7 +1,7 @@
 ---
 # Tasks for testing role
 
-- name: run idempotence test
+- name: Run idempotence test
   hosts: localhost
   roles:
     - role: amtega.docker_presets
@@ -17,10 +17,10 @@
   tags:
     - sandbox
 
-- name: prepare docker containers for test
+- name: Prepare docker containers for test
   hosts: docker_sandbox_containers
   tasks:
-    - name: setup extra users
+    - name: Setup extra users
       set_fact:
         users_extra:
           name: johnroot
@@ -30,14 +30,14 @@
   tags:
     - idempotence
 
-- name: test users role
+- name: Test users role
   hosts: docker_sandbox_containers
   roles:
     - amtega.users
   vars:
     users_load_from_hostvars: yes
     users:
-      - name: johnd
+      - name: Johnd
         comment: John Doe
         uid: 1040
         group: users
@@ -47,12 +47,12 @@
       state: present
       password_inactive: 30
   tasks:
-    - name: read /etc/passwd file
+    - name: Read /etc/passwd file
       command: cat /etc/passwd
       changed_when: false
       register: read_passwd_result
 
-    - name: check that /etc/passwd contains required users
+    - name: Check that /etc/passwd contains required users
       assert:
         that:
           - read_passwd_result.stdout is search("johnd")
@@ -60,7 +60,7 @@
   tags:
     - idempotence
 
-- name: cleanup docker docker sandbox
+- name: Cleanup docker docker sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
