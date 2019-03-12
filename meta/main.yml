@@ -26,21 +26,24 @@ galaxy_info:
 
 dependencies:
   - role: amtega.check_platform
-    check_platform_distributions:
-      centos: 6
-      debian: 9
-      fedora: 27
-      rhel: 6
+    vars:
+      check_platform_distributions:
+        centos: 6
+        debian: 9
+        fedora: 27
+        rhel: 6
     tags:
       - role::users
 
   - role: amtega.select_hostvars
-    select_hostvars_pattern: "^users_.*"
-    select_hostvars_exclude_pattern: "^users_defaults$"
-    select_hostvars_attributes:
-      - name
-    select_hostvars_fact_name: users_hostvars
-    select_hostvars_output_type: list
+    vars:
+      select_hostvars_query:
+        pattern: "^users_.*"
+        exclude_pattern: "^users_defaults$"
+        attributes:
+          - name
+        fact_name: users_hostvars
+        output_type: list
     when: users_load_from_hostvars
     tags:
       - role::users

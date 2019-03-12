@@ -2,7 +2,7 @@
 # Role tasks
 
 - block:
-    - name: get users shadow password information
+    - name: Get users shadow password information
       users_shadow_facts:
         usernames: "{{ users_to_manage | map(attribute='name') | list }}"
       register: users_get_shadows_result
@@ -11,7 +11,7 @@
     # with an existen user (with no uid change) and there are processes running
     # with that user. So, first we check existence of the users as workaround
 
-    - name: check users
+    - name: Check users
       command: "getent passwd {{ users_user }}"
       register: users_check_result
       changed_when: no
@@ -21,7 +21,7 @@
         loop_var: users_user
         label: "{{ users_user.name }}"
 
-    - name: setup users
+    - name: Setup users
       user:
         append: >-
           {{ users_user.append
@@ -121,7 +121,7 @@
         users_user_password: >-
           {{ lookup('template', 'password.j2') | from_yaml }}
 
-    - name: get user password expiry information
+    - name: Get user password expiry information
       shell: >-
         getent shadow | grep "^{{ users_user.name }}:" > /dev/null
         && chage --list {{ users_user.name }}
@@ -140,7 +140,7 @@
       environment:
         LANGUAGE: en_US
 
-    - name: setup user password expiry information
+    - name: Setup user password expiry information
       command: >-
         {{ (users_chage_parameters | length > 0)
            | ternary("chage "
