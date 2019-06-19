@@ -30,7 +30,7 @@ dependencies:
       check_platform_distributions:
         centos: 6
         debian: 9
-        fedora: 27
+        fedora: 29
         rhel: 6
     tags:
       - role::users
