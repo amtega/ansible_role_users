@@ -18,8 +18,8 @@ galaxy_info:
         - 7
     - name: Fedora
       versions:
-        - 27
-        - 28
+        - 29
+        - 30
   galaxy_tags:
     - system
     - users
@@ -44,6 +44,6 @@ dependencies:
           - name
         fact_name: users_hostvars
         output_type: list
-    when: users_load_from_hostvars
+    when: users_load_from_hostvars | bool
     tags:
       - role::users
