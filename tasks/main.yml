@@ -139,6 +139,7 @@
         label: "{{ users_user.name }}"
       environment:
         LANGUAGE: en_US
+        LC_ALL: en_US
 
     - name: Setup user password expiry information
       command: >-
