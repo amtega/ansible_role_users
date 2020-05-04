@@ -64,7 +64,7 @@
 
 users: []
 
-# Dicitionary with the defaults options to use if no other ones are specified in
+# Dictionary with the defaults options to use if no other ones are specified in
 # the `users` variable. The members of the dict are the same attributes
 # that the ones expected by the ansible user module
 
