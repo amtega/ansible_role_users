@@ -1,0 +1,16 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Read /etc/passwd file
+      command: cat /etc/passwd
+      changed_when: no
+      register: read_passwd_result
+
+    - name: Check that /etc/passwd contains required users
+      assert:
+        that:
+          - read_passwd_result.stdout is search("johnd")
+          - read_passwd_result.stdout is search("johnroot")
