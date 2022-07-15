@@ -14,9 +14,9 @@ users_chage_options:
 # Chage tool config options map
 
 users_chage_options_map:
-  password_last_day: Last password change
-  password_expire_date: Password expires
-  password_inactive: Password inactive
-  password_min_days: Minimum .* password change
-  password_max_days: Maximum .* password change
-  password_warn_days: Number of days of warning .*
+  password_last_day: Last password change            # pragma: allowlist secret
+  password_expire_date: Password expires             # pragma: allowlist secret
+  password_inactive: Password inactive               # pragma: allowlist secret
+  password_min_days: Minimum .* password change      # pragma: allowlist secret
+  password_max_days: Maximum .* password change      # pragma: allowlist secret
+  password_warn_days: Number of days of warning .*   # pragma: allowlist secret

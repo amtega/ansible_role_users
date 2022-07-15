@@ -80,7 +80,7 @@ users_load_from_hostvars: no
 # Algorithm to use for new passwords hash. See ansible `password_hash` filter
 # for details
 
-users_password_hash_algorithm: sha512
+users_password_hash_algorithm: sha512  # pragma: allowlist secret
 
 # Seed to use for new passwords hash
 
