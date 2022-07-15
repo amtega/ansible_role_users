@@ -1,7 +1,7 @@
 ---
-# Role tasks
 
-- block:
+- name: Setup users
+  block:
     - name: Get users shadow password information
       users_shadow_facts:
         usernames: "{{ users_to_manage | map(attribute='name') | list }}"
@@ -12,7 +12,7 @@
     # with that user. So, first we check existence of the users as workaround
 
     - name: Check users
-      command: "getent passwd {{ users_user }}"
+      ansible.builtin.command: "getent passwd {{ users_user }}"
       register: users_check_result
       changed_when: no
       failed_when: no
@@ -22,7 +22,7 @@
         label: "{{ users_user.name }}"
 
     - name: Setup users
-      user:
+      ansible.builtin.user:
         append: >-
           {{ users_user.append
              | default(users_defaults.append) | default(omit) }}
@@ -122,7 +122,7 @@
           {{ lookup('template', 'password.j2') | from_yaml }}
 
     - name: Get user password expiry information
-      shell: >-
+      ansible.builtin.shell: >-
         getent shadow | grep "^{{ users_user.name }}:" > /dev/null
         && chage --list {{ users_user.name }}
       args:
@@ -142,7 +142,7 @@
         LC_ALL: en_US
 
     - name: Setup user password expiry information
-      command: >-
+      ansible.builtin.command: >-
         {{ (users_chage_parameters | length > 0)
            | ternary("chage "
                      + users_chage_parameters | join(" ")
